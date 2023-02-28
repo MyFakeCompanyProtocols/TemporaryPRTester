@@ -48,19 +48,22 @@ jobs:
           securityToken: ${{ secrets.PAT }}
   autoSyncFork:
     name: Sync Fork with Upstream.
-    needs: createDotGithubIfNotExist
+    # dont sync when this is the original
+    if: ${{ github.repository_owner }} != SkylineCommunications
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: tgymnich/fork-sync@v1.8
-        with:
-          token: ${{ secrets.PAT }}
-          base: main
-          head: main       
+      - name: Sync Fork With Remote
+        id: check_github_repo
+        run: | 
+          git remote add upstream https://github.com/SkylineCommunications/TemporaryPRTester.git
+          git fetch upstream
+          git checkout master
+          git merge upstream/master
   collectWorkflowFiles:
     name: Find Workflow Files
     runs-on: ubuntu-latest
-    needs: autoSyncFork
+    needs: [autoSyncFork,createDotGithubIfNotExist]
     steps:
     - uses: actions/checkout@v3
     - name: Archive Workflow Files
