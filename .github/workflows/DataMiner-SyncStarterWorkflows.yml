@@ -41,6 +41,7 @@ jobs:
           org-admin-token: '${{ secrets.PAT }}'
   collectWorkflowFiles:
     runs-on: ubuntu-latest
+    needs: createDotGithubIfNotExist
     steps:
     - uses: actions/checkout@v3
     - name: Archive Workflow Files
