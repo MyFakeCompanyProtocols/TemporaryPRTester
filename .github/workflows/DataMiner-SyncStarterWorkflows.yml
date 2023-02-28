@@ -25,10 +25,13 @@ jobs:
         id: check_github_repo
         run: |
           if curl -s https://api.github.com/repos/${{ github.repository_owner }}/TemporaryTestJST | grep -q 'Not Found'; then
-            echo not_found=true>> $GITHUB_OUTPUT
+            echo not_found='true'>> $GITHUB_OUTPUT
           else
-            echo not_found=false>> $GITHUB_OUTPUT
+            echo not_found='false'>> $GITHUB_OUTPUT
           fi
+      - name: Next step
+        if: steps.check_github_repo.outputs.not_found == 'true'
+        run: echo ".github repository not found"
       - name: Use Node.js
         if: steps.check_github_repo.outputs.not_found == 'true'
         uses: actions/setup-node@v2
