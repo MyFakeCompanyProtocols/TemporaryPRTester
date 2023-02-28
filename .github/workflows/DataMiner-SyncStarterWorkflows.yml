@@ -28,6 +28,7 @@ jobs:
         path: "${{ github.workspace }}/workflow-templates"
   createPullRequest:
     runs-on: ubuntu-latest
+    needs: collectWorkflowFiles
     steps:
     - uses: actions/checkout@v3       
       with:
