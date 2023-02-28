@@ -17,6 +17,28 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 
 jobs:
+  createDotGithubIfNotExist:
+    runs-on: ubuntu-latest
+    name: Creating Organization Repository if Not exist
+    steps:
+      - name: Check If .github Exists
+        id: check_github_repo
+        run: |
+          if curl -s https://api.github.com/repos/${{ github.repository_owner }}/TemporaryTestJST | grep -q 'Not Found'; then
+            echo "::set-output name=not_found::true"
+          else
+            echo "::set-output name=not_found::false"
+          fi
+      - name: Use Node.js
+        if: steps.check_github_repo.outputs.not_found == 'true'
+        uses: actions/setup-node@v2
+      - name: Creating GitHub Organization Repository
+        if: steps.check_github_repo.outputs.not_found == 'true'
+        uses: repo-ctrl/create-repo-action@main 
+        id: create-repo
+        with:
+          repo-name: 'TemporaryTestJST'
+          org-admin-token: '${{ secrets.PAT }}'
   collectWorkflowFiles:
     runs-on: ubuntu-latest
     steps:
