@@ -49,11 +49,11 @@ jobs:
   autoSyncFork:
     name: Sync Fork with Upstream.
     # dont sync when this is the original
-    if: ${{ github.repository_owner }} != SkylineCommunications
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Sync Fork With Remote
+        if: ${{ github.repository_owner }} != SkylineCommunications
         id: check_github_repo
         run: | 
           git remote add upstream https://github.com/SkylineCommunications/TemporaryPRTester.git
