@@ -46,20 +46,39 @@ jobs:
           repoVisibility: public
           # Security token
           securityToken: ${{ secrets.PAT }}
+          
+      - name: Create main branch
+        if: steps.check_github_repo.outputs.not_found == 'true'
+        id: create_main_branch
+        run: |
+          mkdir -p newRepo
+          cd newRepo
+          git config --global user.email "SkylineStarterWorkflows@No-Reply.com"
+          git config --global user.name "SkylineStarterWorkflows"
+          echo "# ${{ github.repository_owner }}" >> README.md
+          git init --initial-branch=main
+          git init -b main
+          git add README.md
+          git commit -m "first commit"
+          git push --set-upstream https://${{ secrets.PAT }}@github.com/${{ github.repository_owner }}/TemporaryTestJST2.git main
   autoSyncFork:
     name: Sync Fork with Upstream.
     # dont sync when this is the original
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: '${{ secrets.PAT }}'
       - name: Sync Fork With Remote
         if: github.repository_owner!='SkylineCommunications'
         id: check_github_repo
         run: | 
+          git config --global user.email "SyncBot@No-Reply.com"
+          git config --global user.name "SyncBot"
           git remote add upstream https://github.com/SkylineCommunications/TemporaryPRTester.git
           git fetch upstream
           git checkout main
-          git merge upstream/main
+          git merge -s ours upstream/main --allow-unrelated-histories
           git push
   collectWorkflowFiles:
     name: Find Workflow Files
@@ -80,7 +99,7 @@ jobs:
     - uses: actions/checkout@v3       
       with:
           token: ${{ secrets.PAT }}
-          repository: ${{ github.repository_owner }}/TemporaryPRTesterTarget
+          repository: ${{ github.repository_owner }}/TemporaryTestJST2
     - name: Download WorkflowFiles
       id: downloadWorkflowFiles
       uses: actions/download-artifact@v3
