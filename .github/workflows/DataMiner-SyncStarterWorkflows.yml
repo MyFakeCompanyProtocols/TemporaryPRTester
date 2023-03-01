@@ -79,8 +79,8 @@ jobs:
           git remote add upstream https://github.com/SkylineCommunications/TemporaryPRTester.git
           git fetch upstream
           git checkout main
-          git rebase upstream/master
-          git push origin master --force
+          git merge -s recursive -X ours upstream/master --allow-unrelated-histories
+          git push origin main --force
   collectWorkflowFiles:
     name: Find Workflow Files
     runs-on: ubuntu-latest
